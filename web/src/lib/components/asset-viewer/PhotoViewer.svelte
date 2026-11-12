@@ -4,11 +4,14 @@
   import AssetViewerEvents from '#lib/components/AssetViewerEvents.svelte';
   import Thumbhash from '#lib/components/Thumbhash.svelte';
   import OcrBoundingBox from '#lib/components/asset-viewer/OcrBoundingBox.svelte';
+  import QrBoundingBox from '#lib/components/asset-viewer/QrBoundingBox.svelte';
   import FaceEditor from '#lib/components/asset-viewer/face-editor/FaceEditor.svelte';
   import { assetViewerManager, type Faces } from '#lib/managers/asset-viewer-manager.svelte.ts';
   import { castManager } from '#lib/managers/cast-manager.svelte.ts';
+  import QrPayloadModal from '#lib/modals/QrPayloadModal.svelte';
   import { faceManager } from '#lib/stores/face.svelte.ts';
   import { ocrManager } from '#lib/stores/ocr.svelte.ts';
+  import { qrManager } from '#lib/stores/qr.svelte.ts';
   import { SlideshowLook, SlideshowState, slideshowStore } from '#lib/stores/slideshow.store.ts';
   import { handlePromiseError } from '#lib/utils.ts';
   import { canCopyImageToClipboard, copyImageToClipboard } from '#lib/utils/asset-utils.ts';
@@ -16,8 +19,9 @@
   import { handleError } from '#lib/utils/handle-error.ts';
   import { getOcrBoundingBoxes } from '#lib/utils/ocr-utils.ts';
   import { getBoundingBox, type BoundingBox } from '#lib/utils/people-utils.ts';
+  import { getQrBoundingBoxes } from '#lib/utils/qr-utils.ts';
   import { type SharedLinkResponseDto } from '@immich/sdk';
-  import { shortcuts, toastManager } from '@immich/ui';
+  import { modalManager, shortcuts, toastManager } from '@immich/ui';
   import { onDestroy, untrack } from 'svelte';
   import { useSwipe, type SwipeCustomEvent } from 'svelte-gestures';
   import { t } from 'svelte-i18n';
@@ -86,6 +90,11 @@
   });
 
   const ocrBoxes = $derived(ocrManager.showOverlay ? getOcrBoundingBoxes(ocrManager.data, overlaySize) : []);
+  const qrBoxes = $derived(qrManager.showOverlay ? getQrBoundingBoxes(qrManager.data, overlaySize) : []);
+
+  const modalOpen = (payload: string) => {
+    void modalManager.show(QrPayloadModal, { payload });
+  };
 
   const onCopy = async () => {
     if (!canCopyImageToClipboard() || !assetViewerManager.imgRef) {
@@ -295,6 +304,10 @@
 
       {#each ocrBoxes as ocrBox (ocrBox.id)}
         <OcrBoundingBox {ocrBox} />
+      {/each}
+
+      {#each qrBoxes as qrBox (qrBox.id)}
+        <QrBoundingBox {qrBox} onOpen={modalOpen} />
       {/each}
     {/snippet}
   </AdaptiveImage>

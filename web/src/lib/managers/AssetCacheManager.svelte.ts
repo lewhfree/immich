@@ -1,6 +1,6 @@
 import { authManager } from '#lib/managers/auth-manager.svelte.ts';
 import { eventManager } from '#lib/managers/event-manager.svelte.ts';
-import { getAssetInfo, getAssetOcr, getFaces } from '@immich/sdk';
+import { getAssetInfo, getAssetOcr, getAssetQr, getFaces } from '@immich/sdk';
 
 const defaultSerializer = <K>(params: K) => JSON.stringify(params);
 
@@ -38,6 +38,7 @@ class AsyncCache<K, V> {
 class AssetCacheManager {
   #assetCache = new AsyncCache(getAssetInfo);
   #ocrCache = new AsyncCache(getAssetOcr);
+  #qrCache = new AsyncCache(getAssetQr);
   #faceCache = new AsyncCache(getFaces);
 
   constructor() {
@@ -59,6 +60,10 @@ class AssetCacheManager {
     return this.#ocrCache.getOrFetch({ id }, true);
   }
 
+  async getAssetQr(id: string) {
+    return this.#qrCache.getOrFetch({ id }, true);
+  }
+
   async getAssetFaces(id: string) {
     return this.#faceCache.getOrFetch({ id }, true);
   }
@@ -67,6 +72,7 @@ class AssetCacheManager {
     const { key, slug } = authManager.params;
     this.#assetCache.clearKey({ id, key, slug });
     this.#ocrCache.clearKey({ id });
+    this.#qrCache.clearKey({ id });
     this.#faceCache.clearKey({ id });
   }
 
@@ -78,6 +84,10 @@ class AssetCacheManager {
     this.#ocrCache.clear();
   }
 
+  clearQrCache() {
+    this.#qrCache.clear();
+  }
+
   clearFaceCache() {
     this.#faceCache.clear();
   }
@@ -85,6 +95,7 @@ class AssetCacheManager {
   invalidate() {
     this.clearAssetCache();
     this.clearOcrCache();
+    this.clearQrCache();
     this.clearFaceCache();
   }
 }

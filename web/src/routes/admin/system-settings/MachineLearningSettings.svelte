@@ -337,6 +337,20 @@
           />
         </div>
       </SettingAccordion>
+
+      <SettingAccordion
+        key="qr"
+        title={$t('admin.machine_learning_qr')}
+        subtitle={$t('admin.machine_learning_qr_description')}
+      >
+        <div class="mt-4 ml-4 flex flex-col gap-4">
+          <SettingSwitch
+            title={$t('admin.machine_learning_qr')}
+            bind:checked={configToEdit.machineLearning.qr.enabled}
+            disabled={disabled || !configToEdit.machineLearning.enabled}
+          />
+        </div>
+      </SettingAccordion>
       <SettingButtonsRow bind:configToEdit keys={['machineLearning']} {disabled} />
     </form>
   </div>

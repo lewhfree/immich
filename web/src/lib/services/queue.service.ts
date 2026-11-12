@@ -23,6 +23,7 @@ import {
   mdiPencil,
   mdiPlay,
   mdiPlus,
+  mdiQrcode,
   mdiStateMachine,
   mdiTable,
   mdiTagFaces,
@@ -161,6 +162,11 @@ export const asQueueItem = ($t: MessageFormatter, queue: { name: QueueName }): Q
       icon: mdiOcr,
       title: $t('admin.machine_learning_ocr'),
       subtitle: $t('admin.ocr_job_description'),
+    },
+    [QueueName.Qr]: {
+      icon: mdiQrcode,
+      title: $t('qr_code'),
+      subtitle: $t('admin.machine_learning_qr_description'),
     },
     [QueueName.VideoConversion]: {
       icon: mdiVideo,

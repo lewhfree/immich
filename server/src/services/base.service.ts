@@ -113,6 +113,7 @@ export const BASE_SERVICE_DEPENDENCIES = [
   NotificationRepository,
   OAuthRepository,
   OcrRepository,
+  QrRepository,
   PartnerRepository,
   PasskeyRepository,
   PersonRepository,

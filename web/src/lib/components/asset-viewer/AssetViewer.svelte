@@ -24,6 +24,7 @@
   import { faceManager } from '#lib/stores/face.svelte.ts';
   import { ocrManager } from '#lib/stores/ocr.svelte.ts';
   import { alwaysLoadOriginalVideo } from '#lib/stores/preferences.store.ts';
+  import { qrManager } from '#lib/stores/qr.svelte.ts';
   import { SlideshowNavigation, SlideshowState, slideshowStore } from '#lib/stores/slideshow.store.ts';
   import { getSharedLink, handlePromiseError } from '#lib/utils.ts';
   import type { OnUndoDelete } from '#lib/utils/actions.ts';
@@ -56,6 +57,7 @@
   import ImagePanoramaViewer from './ImagePanoramaViewer.svelte';
   import OcrButton from './OcrButton.svelte';
   import PhotoViewer from './PhotoViewer.svelte';
+  import QrButton from './QrButton.svelte';
   import SlideshowBar from './SlideshowBar.svelte';
   import SlideshowMetadataOverlay from './SlideshowMetadataOverlay.svelte';
   import VideoViewer from './VideoWrapperViewer.svelte';
@@ -395,9 +397,11 @@
   const refresh = async ({ id }: AssetResponseDto) => {
     ocrManager.clear();
     faceManager.clear();
+    qrManager.clear();
     if (!sharedLink) {
       await ocrManager.getAssetOcr(id);
       await faceManager.getAssetFaces(id);
+      await qrManager.getAssetQr(id);
     }
   };
 
@@ -455,6 +459,12 @@
       asset.type === AssetTypeEnum.Image &&
       !assetViewerManager.isShowEditor &&
       ocrManager.hasOcrData,
+  );
+  const showQrButton = $derived(
+    $slideshowState === SlideshowState.None &&
+      asset.type === AssetTypeEnum.Image &&
+      !assetViewerManager.isShowEditor &&
+      qrManager.hasQrData,
   );
   const { Tag, TagPeople } = $derived(getAssetActions($t, asset));
   const showDetailPanel = $derived(
@@ -605,6 +615,12 @@
     {#if showOcrButton}
       <div class="absolute inset-e-0 bottom-0 me-6 mb-6 drop-shadow-[0_0_1px_rgba(0,0,0,0.4)]">
         <OcrButton />
+      </div>
+    {/if}
+
+    {#if showQrButton}
+      <div class="absolute inset-e-0 bottom-0 me-16 mb-6 drop-shadow-[0_0_1px_rgba(0,0,0,0.4)]">
+        <QrButton />
       </div>
     {/if}
 

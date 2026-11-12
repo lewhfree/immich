@@ -191,6 +191,7 @@ const adminConfig = (overrides: Partial<ResponseOf<'getAdminConfig'>> = {}): Res
     library: { concurrency: 5 },
     notifications: { concurrency: 5 },
     ocr: { concurrency: 1 },
+    qr: { concurrency: 1 },
     workflow: { concurrency: 5 },
     editor: { concurrency: 2 },
     integrityCheck: { concurrency: 1 },
@@ -210,6 +211,7 @@ const adminConfig = (overrides: Partial<ResponseOf<'getAdminConfig'>> = {}): Res
       minRecognitionScore: 0.8,
       maxResolution: 736,
     },
+    qr: { enabled: true },
   },
   map: {
     enabled: true,
@@ -303,6 +305,7 @@ const queues = (): ResponseOf<'getQueuesLegacy'> => ({
   migration: idleQueue(),
   notifications: idleQueue(),
   ocr: idleQueue(),
+  qr: idleQueue(),
   search: idleQueue(),
   sidecar: idleQueue(),
   smartSearch: idleQueue(),

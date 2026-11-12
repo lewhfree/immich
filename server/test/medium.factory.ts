@@ -54,6 +54,7 @@ import { PasskeyRepository } from 'src/repositories/passkey.repository.js';
 import { PersonUserRepository } from 'src/repositories/person-user.repository.js';
 import { PersonRepository } from 'src/repositories/person.repository.js';
 import { PluginRepository } from 'src/repositories/plugin.repository.js';
+import { QrRepository } from 'src/repositories/qr.repository.js';
 import { SearchRepository } from 'src/repositories/search.repository.js';
 import { SessionRepository } from 'src/repositories/session.repository.js';
 import { SharedLinkAssetRepository } from 'src/repositories/shared-link-asset.repository.js';
@@ -535,6 +536,7 @@ const newRealRepository = <T extends BaseServiceDeps[number]>(key: T, db: Kysely
     case LibraryRepository:
     case NotificationRepository:
     case OcrRepository:
+    case QrRepository:
     case AuthChallengeRepository:
     case PartnerRepository:
     case PasskeyRepository:
