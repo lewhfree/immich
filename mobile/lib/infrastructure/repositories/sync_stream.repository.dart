@@ -6,6 +6,7 @@ import 'package:immich_mobile/constants/constants.dart';
 import 'package:immich_mobile/data/db/main/database.dart';
 import 'package:immich_mobile/data/db/main/table/asset/edit.drift.dart';
 import 'package:immich_mobile/data/db/main/table/asset/ocr.drift.dart';
+import 'package:immich_mobile/data/db/main/table/asset/qr.drift.dart';
 import 'package:immich_mobile/data/db/main/table/local/album.drift.dart';
 import 'package:immich_mobile/data/db/main/table/memory/asset.drift.dart';
 import 'package:immich_mobile/data/db/main/table/memory/memory.drift.dart';
@@ -75,6 +76,7 @@ class SyncStreamRepository extends DatabaseAccessor<Drift> with $SyncStreamRepos
             await _db.remoteAssetCloudIdEntity.deleteAll();
             await _db.assetEditEntity.deleteAll();
             await _db.assetOcrEntity.deleteAll();
+            await _db.assetQrEntity.deleteAll();
           });
         } finally {
           // re-enable FK even if the transaction throws, otherwise the connection
@@ -946,6 +948,50 @@ class SyncStreamRepository extends DatabaseAccessor<Drift> with $SyncStreamRepos
       });
     } catch (error, stack) {
       _logger.severe('Error: deleteAssetOcrV1', error, stack);
+      rethrow;
+    }
+  }
+
+  Future<void> updateAssetQrV1(Iterable<SyncAssetQrV1> data) async {
+    try {
+      await _db.batch((batch) {
+        for (final assetQr in data) {
+          final companion = AssetQrEntityCompanion(
+            assetId: Value(assetQr.assetId),
+            payload: Value(assetQr.payload),
+            x1: Value(assetQr.x1),
+            y1: Value(assetQr.y1),
+            x2: Value(assetQr.x2),
+            y2: Value(assetQr.y2),
+            x3: Value(assetQr.x3),
+            y3: Value(assetQr.y3),
+            x4: Value(assetQr.x4),
+            y4: Value(assetQr.y4),
+            isVisible: Value(assetQr.isVisible),
+          );
+
+          batch.insert(
+            _db.assetQrEntity,
+            companion.copyWith(id: Value(assetQr.id)),
+            onConflict: DoUpdate((_) => companion),
+          );
+        }
+      });
+    } catch (error, stack) {
+      _logger.severe('Error: updateAssetQrV1', error, stack);
+      rethrow;
+    }
+  }
+
+  Future<void> deleteAssetQrV1(Iterable<SyncAssetQrDeleteV1> data) async {
+    try {
+      await _db.batch((batch) {
+        for (final assetQr in data) {
+          batch.deleteWhere(_db.assetQrEntity, (row) => row.assetId.equals(assetQr.assetId));
+        }
+      });
+    } catch (error, stack) {
+      _logger.severe('Error: deleteAssetQrV1', error, stack);
       rethrow;
     }
   }

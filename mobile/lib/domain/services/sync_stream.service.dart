@@ -334,6 +334,10 @@ class SyncStreamService {
         return _syncStreamRepository.updateAssetOcrV1(data.cast());
       case SyncEntityType.assetOcrDeleteV1:
         return _syncStreamRepository.deleteAssetOcrV1(data.cast());
+      case SyncEntityType.assetQrV1:
+        return _syncStreamRepository.updateAssetQrV1(data.cast());
+      case SyncEntityType.assetQrDeleteV1:
+        return _syncStreamRepository.deleteAssetQrV1(data.cast());
     }
   }
 

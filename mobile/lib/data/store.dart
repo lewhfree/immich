@@ -5,6 +5,7 @@ import 'package:immich_mobile/data/store/activity.dart';
 import 'package:immich_mobile/data/store/ocr.dart';
 import 'package:immich_mobile/data/store/passkey.dart';
 import 'package:immich_mobile/data/store/person.dart';
+import 'package:immich_mobile/data/store/qr.dart';
 import 'package:immich_mobile/data/store/tag.dart';
 import 'package:immich_mobile/data/store/user_metadata.dart';
 import 'package:immich_mobile/services/api.service.dart';
@@ -42,6 +43,8 @@ abstract final class Store {
   static final activity = ActivityStore.instance;
 
   static final ocr = OcrStore.instance;
+
+  static final qr = QrStore.instance;
 
   static final passkeys = PasskeyStore.instance;
 

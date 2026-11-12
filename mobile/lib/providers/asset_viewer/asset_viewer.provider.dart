@@ -18,6 +18,7 @@ abstract class AssetViewerState with _$AssetViewerState {
     @Default(true) bool showingControls,
     @Default(false) bool isZoomed,
     @Default(false) bool showingOcr,
+    @Default(false) bool showingQr,
     BaseAsset? currentAsset,
 
     /// Physical thumbnail size retained while paging through the viewer.
@@ -51,6 +52,7 @@ class AssetViewerStateNotifier extends Notifier<AssetViewerState> {
       thumbnailSize: thumbnailSize ?? state.thumbnailSize,
       stackIndex: 0,
       showingOcr: false,
+      showingQr: false,
     );
     _watchCurrentAsset(asset);
   }
@@ -111,6 +113,10 @@ class AssetViewerStateNotifier extends Notifier<AssetViewerState> {
 
   void toggleOcr() {
     state = state.copyWith(showingOcr: !state.showingOcr);
+  }
+
+  void toggleQr() {
+    state = state.copyWith(showingQr: !state.showingQr);
   }
 }
 

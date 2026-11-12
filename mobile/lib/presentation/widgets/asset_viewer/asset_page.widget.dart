@@ -15,6 +15,7 @@ import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_details.wi
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_stack.provider.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_stack.widget.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/ocr_overlay.widget.dart';
+import 'package:immich_mobile/presentation/widgets/asset_viewer/qr_overlay.widget.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/video_viewer.widget.dart';
 import 'package:immich_mobile/presentation/widgets/images/image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/images/progressive_image.widget.dart';
@@ -444,6 +445,7 @@ class _AssetPageState extends ConsumerState<AssetPage> {
         : liveMotionPlaying;
     final timelineOrigin = ref.watch(timelineServiceProvider).origin;
     final showingOcr = ref.watch(assetViewerProvider.select((s) => s.showingOcr));
+    final showingQr = ref.watch(assetViewerProvider.select((s) => s.showingQr));
 
     final asset = _asset;
     if (asset == null) {
@@ -501,6 +503,15 @@ class _AssetPageState extends ConsumerState<AssetPage> {
                 if (showingOcr && displayAsset.width != null && displayAsset.height != null)
                   Positioned.fill(
                     child: OcrOverlay(
+                      asset: displayAsset,
+                      imageSize: Size(displayAsset.width!.toDouble(), displayAsset.height!.toDouble()),
+                      viewportSize: Size(viewportWidth, viewportHeight),
+                      controller: _viewController,
+                    ),
+                  ),
+                if (showingQr && displayAsset.width != null && displayAsset.height != null)
+                  Positioned.fill(
+                    child: QrOverlay(
                       asset: displayAsset,
                       imageSize: Size(displayAsset.width!.toDouble(), displayAsset.height!.toDouble()),
                       viewportSize: Size(viewportWidth, viewportHeight),
