@@ -27,6 +27,7 @@ import {
   type AssetEditActionItem,
 } from 'src/dtos/editing.dto.js';
 import { AssetOcrResponseDto } from 'src/dtos/ocr.dto.js';
+import { AssetQrResponseDto } from 'src/dtos/qr.dto.js';
 import {
   AssetFileType,
   AssetStatus,
@@ -406,6 +407,30 @@ export class AssetService extends BaseService {
     });
 
     return ocr.map((item) => transformOcrBoundingBox(item, asset.edits, dimensions));
+  }
+
+  async getQr(auth: AuthDto, id: string): Promise<AssetQrResponseDto[]> {
+    await this.requireAccess({ auth, permission: Permission.AssetRead, ids: [id] });
+    const qr = await this.qrRepository.getByAssetId(id);
+    const asset = await this.assetRepository.getForOcr(id);
+
+    if (!asset) {
+      throw new BadRequestException('Asset not found');
+    }
+
+    const dimensions = getDimensions({
+      exifImageHeight: asset.exifImageHeight,
+      exifImageWidth: asset.exifImageWidth,
+      orientation: asset.orientation,
+    });
+
+    return qr.map((item) =>
+      transformOcrBoundingBox(
+        { ...item, text: item.payload } as unknown as AssetOcrResponseDto,
+        asset.edits,
+        dimensions,
+      ),
+    ) as unknown as AssetQrResponseDto[];
   }
 
   async upsertBulkMetadata(auth: AuthDto, dto: AssetMetadataBulkUpsertDto): Promise<AssetMetadataBulkResponseDto[]> {

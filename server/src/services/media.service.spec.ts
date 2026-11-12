@@ -358,6 +358,7 @@ describe(MediaService.name, () => {
       rawInfo = { width: 100, height: 100, channels: 3 };
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
       mocks.media.decodeImage.mockImplementation((input) =>
         Promise.resolve(
           typeof input === 'string'
@@ -1413,6 +1414,7 @@ describe(MediaService.name, () => {
       rawInfo = { width: 100, height: 100, channels: 3 };
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
       mocks.media.decodeImage.mockImplementation((input) =>
         Promise.resolve(
           typeof input === 'string'
@@ -1447,6 +1449,7 @@ describe(MediaService.name, () => {
       mocks.media.generateThumbhash.mockResolvedValue(thumbhashBuffer);
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
 
       await sut.handleAssetEditThumbnailGeneration({ id: asset.id });
 
@@ -1467,6 +1470,7 @@ describe(MediaService.name, () => {
       mocks.assetJob.getForGenerateThumbnailJob.mockResolvedValue(getForGenerateThumbnail(asset));
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
 
       await sut.handleAssetEditThumbnailGeneration({ id: asset.id });
       expect(mocks.media.generateThumbnail).toHaveBeenCalledWith(
@@ -1513,6 +1517,7 @@ describe(MediaService.name, () => {
       mocks.assetJob.getForGenerateThumbnailJob.mockResolvedValue(getForGenerateThumbnail(asset));
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
 
       await sut.handleAssetEditThumbnailGeneration({ id: asset.id });
 
@@ -1551,6 +1556,7 @@ describe(MediaService.name, () => {
       mocks.media.generateThumbhash.mockResolvedValue(thumbhashBuffer);
       mocks.person.getFaces.mockResolvedValue([]);
       mocks.ocr.getByAssetId.mockResolvedValue([]);
+      mocks.qr.getByAssetId.mockResolvedValue([]);
 
       await sut.handleAssetEditThumbnailGeneration({ id: asset.id });
 

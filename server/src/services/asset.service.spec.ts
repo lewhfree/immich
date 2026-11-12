@@ -33,6 +33,20 @@ const statResponse: AssetStatsResponseDto = {
   total: 33,
 };
 
+const qrFactory = (payload: string) => ({
+  assetId: newUuid(),
+  id: newUuid(),
+  payload,
+  x1: 0.1,
+  y1: 0.2,
+  x2: 0.3,
+  y2: 0.2,
+  x3: 0.3,
+  y3: 0.4,
+  x4: 0.1,
+  y4: 0.4,
+});
+
 describe(AssetService.name, () => {
   let sut: AssetService;
   let mocks: ServiceMocks;
@@ -719,6 +733,45 @@ describe(AssetService.name, () => {
       await expect(sut.getOcr(authStub.admin, asset.id)).resolves.toEqual([]);
 
       expect(mocks.ocr.getByAssetId).toHaveBeenCalledWith(asset.id);
+    });
+  });
+
+  describe('getQr', () => {
+    it('should require asset read permission', async () => {
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set());
+
+      await expect(sut.getQr(authStub.admin, 'asset-1')).rejects.toBeInstanceOf(BadRequestException);
+
+      expect(mocks.qr.getByAssetId).not.toHaveBeenCalled();
+    });
+
+    it('should return QR data for an asset', async () => {
+      const qr1 = qrFactory('https://immich.app');
+      const qr2 = qrFactory('https://github.com/immich-app/immich');
+      const asset = AssetFactory.from().exif().build();
+
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set([asset.id]));
+      mocks.qr.getByAssetId.mockResolvedValue([qr1, qr2]);
+      mocks.asset.getForOcr.mockResolvedValue({ edits: [], ...asset.exifInfo });
+
+      await expect(sut.getQr(authStub.admin, asset.id)).resolves.toEqual([{ ...qr1, text: qr1.payload }, { ...qr2, text: qr2.payload }]);
+
+      expect(mocks.access.asset.checkOwnerAccess).toHaveBeenCalledWith(
+        authStub.admin.user.id,
+        new Set([asset.id]),
+        undefined,
+      );
+      expect(mocks.qr.getByAssetId).toHaveBeenCalledWith(asset.id);
+    });
+
+    it('should return empty array when no QR data exists', async () => {
+      const asset = AssetFactory.from().exif().build();
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set([asset.id]));
+      mocks.qr.getByAssetId.mockResolvedValue([]);
+      mocks.asset.getForOcr.mockResolvedValue({ edits: [], ...asset.exifInfo });
+      await expect(sut.getQr(authStub.admin, asset.id)).resolves.toEqual([]);
+
+      expect(mocks.qr.getByAssetId).toHaveBeenCalledWith(asset.id);
     });
   });
 

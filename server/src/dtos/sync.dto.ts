@@ -444,11 +444,42 @@ const SyncAssetOcrDeleteV1Schema = z
   })
   .meta({ id: 'SyncAssetOcrDeleteV1' });
 
+const SyncAssetQrV1Schema = z
+  .object({
+    id: z.uuidv4().describe('QR entry ID'),
+    assetId: z.uuidv4().describe('Asset ID'),
+
+    x1: z.number().meta({ format: 'double' }).describe('Top-left X coordinate (normalized 0–1)'),
+    y1: z.number().meta({ format: 'double' }).describe('Top-left Y coordinate (normalized 0–1)'),
+    x2: z.number().meta({ format: 'double' }).describe('Top-right X coordinate (normalized 0–1)'),
+    y2: z.number().meta({ format: 'double' }).describe('Top-right Y coordinate (normalized 0–1)'),
+    x3: z.number().meta({ format: 'double' }).describe('Bottom-right X coordinate (normalized 0–1)'),
+    y3: z.number().meta({ format: 'double' }).describe('Bottom-right Y coordinate (normalized 0–1)'),
+    x4: z.number().meta({ format: 'double' }).describe('Bottom-left X coordinate (normalized 0–1)'),
+    y4: z.number().meta({ format: 'double' }).describe('Bottom-left Y coordinate (normalized 0–1)'),
+
+    payload: z.string().describe('Recognized QR code content'),
+    isVisible: z.boolean().describe('Whether the QR entry is visible'),
+  })
+  .meta({ id: 'SyncAssetQrV1' });
+
+const SyncAssetQrDeleteV1Schema = z
+  .object({
+    id: z.string().describe('Audit row ID of the deleted QR entry'),
+    assetId: z.string().describe('Original asset ID of the deleted QR entry'),
+    deletedAt: isoDatetimeToDate.describe('Timestamp when the QR entry was deleted'),
+  })
+  .meta({ id: 'SyncAssetQrDeleteV1' });
+
 @ExtraModel()
 class SyncAssetOcrV1 extends createZodDto(SyncAssetOcrV1Schema) {}
 
 @ExtraModel()
 class SyncAssetOcrDeleteV1 extends createZodDto(SyncAssetOcrDeleteV1Schema) {}
+@ExtraModel()
+class SyncAssetQrV1 extends createZodDto(SyncAssetQrV1Schema) {}
+@ExtraModel()
+class SyncAssetQrDeleteV1 extends createZodDto(SyncAssetQrDeleteV1Schema) {}
 @ExtraModel()
 class SyncStackV1 extends createZodDto(SyncStackV1Schema) {}
 @ExtraModel()
@@ -488,6 +519,8 @@ export type SyncItem = {
   [SyncEntityType.AssetExifV1]: SyncAssetExifV1;
   [SyncEntityType.AssetOcrV1]: SyncAssetOcrV1;
   [SyncEntityType.AssetOcrDeleteV1]: SyncAssetOcrDeleteV1;
+  [SyncEntityType.AssetQrV1]: SyncAssetQrV1;
+  [SyncEntityType.AssetQrDeleteV1]: SyncAssetQrDeleteV1;
   [SyncEntityType.AssetEditV1]: SyncAssetEditV1;
   [SyncEntityType.AssetEditDeleteV1]: SyncAssetEditDeleteV1;
   [SyncEntityType.PartnerAssetV2]: SyncAssetV2;

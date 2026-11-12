@@ -37,6 +37,7 @@ import { PersonUserRepository } from 'src/repositories/person-user.repository.js
 import { PersonRepository } from 'src/repositories/person.repository.js';
 import { PluginRepository } from 'src/repositories/plugin.repository.js';
 import { ProcessRepository } from 'src/repositories/process.repository.js';
+import { QrRepository } from 'src/repositories/qr.repository.js';
 import { SearchRepository } from 'src/repositories/search.repository.js';
 import { ServerInfoRepository } from 'src/repositories/server-info.repository.js';
 import { SessionRepository } from 'src/repositories/session.repository.js';
@@ -91,6 +92,7 @@ export const repositories = [
   NotificationRepository,
   OAuthRepository,
   OcrRepository,
+  QrRepository,
   ClusterGroupRepository,
   PartnerRepository,
   PasskeyRepository,

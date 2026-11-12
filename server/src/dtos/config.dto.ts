@@ -205,6 +205,7 @@ const AdminConfigSchemaWithVisibility = z
         library: AdminConfigJobSettingsSchema,
         notifications: AdminConfigJobSettingsSchema,
         ocr: AdminConfigJobSettingsSchema,
+        qr: AdminConfigJobSettingsSchema,
         workflow: AdminConfigJobSettingsSchema,
         editor: AdminConfigJobSettingsSchema,
         integrityCheck: AdminConfigJobSettingsSchema,
@@ -270,6 +271,11 @@ const AdminConfigSchemaWithVisibility = z
             .describe('Minimum confidence score for text recognition')
             .meta({ format: 'double' }),
         }).meta({ id: 'AdminConfigOcrDto' }),
+        qr: z
+          .object({
+            enabled: configBool.describe('Enabled'),
+          })
+          .meta({ id: 'AdminConfigQrDto' }),
       })
       .meta({ id: 'AdminConfigMachineLearningDto' }),
     map: z
@@ -647,6 +653,7 @@ export const defaults = Object.freeze<SystemConfig>({
     library: { concurrency: 5 },
     notifications: { concurrency: 5 },
     ocr: { concurrency: 1 },
+    qr: { concurrency: 1 },
     workflow: { concurrency: 5 },
     editor: { concurrency: 2 },
     integrityCheck: { concurrency: 1 },
@@ -684,6 +691,9 @@ export const defaults = Object.freeze<SystemConfig>({
       minDetectionScore: 0.5,
       minRecognitionScore: 0.8,
       maxResolution: 736,
+    },
+    qr: {
+      enabled: true,
     },
   },
   map: {

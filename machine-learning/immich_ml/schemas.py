@@ -24,6 +24,7 @@ class ModelTask(StrEnum):
     FACIAL_RECOGNITION = "facial-recognition"
     SEARCH = "clip"
     OCR = "ocr"
+    QRCODE = "qrcode"
 
 
 class ModelType(StrEnum):
@@ -43,6 +44,7 @@ class ModelSource(StrEnum):
     INSIGHTFACE = "insightface"
     MCLIP = "mclip"
     OPENCLIP = "openclip"
+    OPENCV = "opencv"
     PADDLE = "paddle"
 
 
@@ -155,6 +157,11 @@ class TextDetectionOptions(Options):
 @dataclass(frozen=True)
 class TextRecognitionOptions(Options):
     min_score: Annotated[float, Field(alias="minScore")] = 0.9
+
+
+@dataclass(frozen=True)
+class QrDetectionOptions(Options):
+    pass
 
 
 InferenceResponse = dict[str, Any]

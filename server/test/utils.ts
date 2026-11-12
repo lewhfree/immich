@@ -57,6 +57,7 @@ import { PersonUserRepository } from 'src/repositories/person-user.repository.js
 import { PersonRepository } from 'src/repositories/person.repository.js';
 import { PluginRepository } from 'src/repositories/plugin.repository.js';
 import { ProcessRepository } from 'src/repositories/process.repository.js';
+import { QrRepository } from 'src/repositories/qr.repository.js';
 import { SearchRepository } from 'src/repositories/search.repository.js';
 import { ServerInfoRepository } from 'src/repositories/server-info.repository.js';
 import { SessionRepository } from 'src/repositories/session.repository.js';
@@ -280,6 +281,7 @@ export type ServiceOverrides = {
   personUser: PersonUserRepository;
   plugin: PluginRepository;
   process: ProcessRepository;
+  qr: QrRepository;
   search: SearchRepository;
   serverInfo: ServerInfoRepository;
   session: SessionRepository;
@@ -370,6 +372,7 @@ export const getMocks = () => {
     personUser: automock(PersonUserRepository, { strict: false }),
     plugin: automock(PluginRepository, { strict: true, args: [databaseMock, loggerMock] }),
     process: automock(ProcessRepository),
+    qr: automock(QrRepository, { strict: false }),
     search: automock(SearchRepository, { strict: false }),
     // eslint-disable-next-line no-sparse-arrays
     serverInfo: automock(ServerInfoRepository, { args: [, loggerMock], strict: false }),
@@ -442,6 +445,7 @@ export const newTestService = <T extends BaseService>(
     overrides.notification || (mocks.notification as As<NotificationRepository>),
     overrides.oauth || (mocks.oauth as As<OAuthRepository>),
     overrides.ocr || (mocks.ocr as As<OcrRepository>),
+    overrides.qr || (mocks.qr as As<QrRepository>),
     overrides.partner || (mocks.partner as As<PartnerRepository>),
     overrides.passkey || (mocks.passkey as As<PasskeyRepository>),
     overrides.person || (mocks.person as As<PersonRepository>),

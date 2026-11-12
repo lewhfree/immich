@@ -15,6 +15,7 @@ export enum ModelTask {
   FACIAL_RECOGNITION = 'facial-recognition',
   SEARCH = 'clip',
   OCR = 'ocr',
+  QRCODE = 'qrcode',
 }
 
 export enum ModelType {
@@ -58,6 +59,18 @@ export type OcrRequest = {
 };
 export type OcrResponse = { [ModelTask.OCR]: OCR } & VisualResponse;
 
+export type QR = {
+  payloads: string[];
+  boxes: number[][][];
+};
+
+export type QrRequest = {
+  [ModelTask.QRCODE]: {
+    [ModelType.DETECTION]: ModelOptions & { options: Record<string, never> };
+  };
+};
+export type QrResponse = { [ModelTask.QRCODE]: QR } & VisualResponse;
+
 export type FacialRecognitionRequest = {
   [ModelTask.FACIAL_RECOGNITION]: {
     [ModelType.DETECTION]: ModelOptions & { options: { minScore: number } };
@@ -72,7 +85,12 @@ export interface Face {
 }
 
 export type FacialRecognitionResponse = { [ModelTask.FACIAL_RECOGNITION]: Face[] } & VisualResponse;
-export type MachineLearningRequest = ClipVisualRequest | ClipTextualRequest | FacialRecognitionRequest | OcrRequest;
+export type MachineLearningRequest =
+  | ClipVisualRequest
+  | ClipTextualRequest
+  | FacialRecognitionRequest
+  | OcrRequest
+  | QrRequest;
 export type TextEncodingOptions = ModelOptions & { language?: string };
 
 @Injectable()
@@ -223,6 +241,16 @@ export class MachineLearningRepository {
     };
     const response = await this.predict<OcrResponse>({ imagePath }, request);
     return response[ModelTask.OCR];
+  }
+
+  async qr(imagePath: string) {
+    const request = {
+      [ModelTask.QRCODE]: {
+        [ModelType.DETECTION]: { modelName: 'opencv', options: {} },
+      },
+    };
+    const response = await this.predict<QrResponse>({ imagePath }, request);
+    return response[ModelTask.QRCODE];
   }
 
   private async getFormData(payload: ModelPayload, config: MachineLearningRequest): Promise<FormData> {

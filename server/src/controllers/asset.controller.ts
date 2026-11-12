@@ -20,6 +20,7 @@ import {
 import type { AuthDto } from 'src/dtos/auth.dto.js';
 import { AssetEditsCreateDto, AssetEditsResponseDto } from 'src/dtos/editing.dto.js';
 import { AssetOcrResponseDto } from 'src/dtos/ocr.dto.js';
+import { AssetQrResponseDto } from 'src/dtos/qr.dto.js';
 import { ApiTag, Permission, RouteKey } from 'src/enum.js';
 import { Auth, Authenticated } from 'src/middleware/auth.guard.js';
 import { AssetService } from 'src/services/asset.service.js';
@@ -180,6 +181,17 @@ export class AssetController {
   })
   getAssetOcr(@Auth() auth: AuthDto, @Param() { id }: UUIDParamDto): Promise<AssetOcrResponseDto[]> {
     return this.service.getOcr(auth, id);
+  }
+
+  @Get(':id/qr')
+  @Authenticated({ permission: Permission.AssetRead })
+  @Endpoint({
+    summary: 'Retrieve asset QR code data',
+    description: 'Retrieve all QR code data associated with the specified asset.',
+    history: new HistoryBuilder().added('v3.5.0'),
+  })
+  getAssetQr(@Auth() auth: AuthDto, @Param() { id }: UUIDParamDto): Promise<AssetQrResponseDto[]> {
+    return this.service.getQr(auth, id);
   }
 
   @Put(':id/metadata')

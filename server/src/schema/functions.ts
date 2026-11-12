@@ -393,3 +393,16 @@ export const asset_ocr_delete_audit = registerFunction({
       RETURN NULL;
     END`,
 });
+
+export const asset_qr_delete_audit = registerFunction({
+  name: 'asset_qr_delete_audit',
+  returnType: 'TRIGGER',
+  language: 'PLPGSQL',
+  body: `
+    BEGIN
+      INSERT INTO asset_qr_audit ("assetId")
+      SELECT "assetId"
+      FROM OLD;
+      RETURN NULL;
+    END`,
+});

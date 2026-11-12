@@ -40,7 +40,7 @@ import type {
 } from 'src/types.js';
 import { getAssetFile, getDimensions } from 'src/utils/asset.util.js';
 import { tokenizeForSearch } from 'src/utils/database.js';
-import { checkFaceVisibility, checkOcrVisibility } from 'src/utils/editor.js';
+import { checkFaceVisibility, checkOcrVisibility, checkQrVisibility } from 'src/utils/editor.js';
 import { BaseConfig, ThumbnailConfig } from 'src/utils/media.js';
 import { mimeTypes } from 'src/utils/mime-types.js';
 import { batched, clamp } from 'src/utils/misc.js';
@@ -860,6 +860,10 @@ export class MediaService extends BaseService {
       .flatMap(({ text }) => tokenizeForSearch(text))
       .join(' ');
     await this.ocrRepository.updateOcrVisibilities(asset.id, ocrStatuses.visible, ocrStatuses.hidden, searchText);
+
+    const qrData = await this.qrRepository.getByAssetId(asset.id, {});
+    const qrStatuses = checkQrVisibility(qrData, originalDimensions, cropBox);
+    await this.qrRepository.updateQrVisibilities(asset.id, qrStatuses.visible, qrStatuses.hidden);
 
     return generated;
   }

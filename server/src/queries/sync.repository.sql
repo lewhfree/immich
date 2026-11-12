@@ -685,6 +685,46 @@ where
 order by
   "asset_ocr"."updateId" asc
 
+-- SyncRepository.assetQr.getDeletes
+select
+  "asset_qr_audit"."id",
+  "asset_qr_audit"."assetId",
+  "asset_qr_audit"."deletedAt"
+from
+  "asset_qr_audit" as "asset_qr_audit"
+  left join "asset" on "asset"."id" = "asset_qr_audit"."assetId"
+where
+  "asset_qr_audit"."id" < $1
+  and "asset_qr_audit"."id" > $2
+  and "asset"."ownerId" = $3
+order by
+  "asset_qr_audit"."id" asc
+
+-- SyncRepository.assetQr.getUpserts
+select
+  "asset_qr"."id",
+  "asset_qr"."assetId",
+  "asset_qr"."x1",
+  "asset_qr"."y1",
+  "asset_qr"."x2",
+  "asset_qr"."y2",
+  "asset_qr"."x3",
+  "asset_qr"."y3",
+  "asset_qr"."x4",
+  "asset_qr"."y4",
+  "asset_qr"."payload",
+  "asset_qr"."isVisible",
+  "asset_qr"."updateId"
+from
+  "asset_qr" as "asset_qr"
+  inner join "asset" on "asset"."id" = "asset_qr"."assetId"
+where
+  "asset_qr"."updateId" < $1
+  and "asset_qr"."updateId" > $2
+  and "asset"."ownerId" = $3
+order by
+  "asset_qr"."updateId" asc
+
 -- SyncRepository.authUser.getUpserts
 select
   "id",

@@ -58,6 +58,7 @@ export class SyncRepository {
   assetFace: AssetFaceSync;
   assetMetadata: AssetMetadataSync;
   assetOcr: AssetOcrSync;
+  assetQr: AssetQrSync;
   authUser: AuthUserSync;
   memory: MemorySync;
   memoryToAsset: MemoryToAssetSync;
@@ -83,6 +84,7 @@ export class SyncRepository {
     this.assetFace = new AssetFaceSync(this.db);
     this.assetMetadata = new AssetMetadataSync(this.db);
     this.assetOcr = new AssetOcrSync(this.db);
+    this.assetQr = new AssetQrSync(this.db);
     this.authUser = new AuthUserSync(this.db);
     this.memory = new MemorySync(this.db);
     this.memoryToAsset = new MemoryToAssetSync(this.db);
@@ -856,6 +858,30 @@ class AssetOcrSync extends BaseSync {
     return this.upsertQuery('asset_ocr', options)
       .select(columns.syncAssetOcr)
       .innerJoin('asset', 'asset.id', 'asset_ocr.assetId')
+      .where('asset.ownerId', '=', userId)
+      .stream();
+  }
+}
+
+class AssetQrSync extends BaseSync {
+  @GenerateSql({ params: [dummyQueryOptions, DummyValue.UUID], stream: true })
+  getDeletes(options: SyncQueryOptions, userId: string) {
+    return this.auditQuery('asset_qr_audit', options)
+      .select(['asset_qr_audit.id', 'asset_qr_audit.assetId', 'asset_qr_audit.deletedAt'])
+      .leftJoin('asset', 'asset.id', 'asset_qr_audit.assetId')
+      .where('asset.ownerId', '=', userId)
+      .stream();
+  }
+
+  cleanupAuditTable(daysAgo: number) {
+    return this.auditCleanup('asset_qr_audit', daysAgo);
+  }
+
+  @GenerateSql({ params: [dummyQueryOptions, DummyValue.UUID], stream: true })
+  getUpserts(options: SyncQueryOptions, userId: string) {
+    return this.upsertQuery('asset_qr', options)
+      .select(columns.syncAssetQr)
+      .innerJoin('asset', 'asset.id', 'asset_qr.assetId')
       .where('asset.ownerId', '=', userId)
       .stream();
   }

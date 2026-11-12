@@ -13,6 +13,7 @@ from types import SimpleNamespace
 from typing import Any, Callable, Iterator, TypeVar
 from unittest import mock
 
+import cv2
 import numpy as np
 import onnxruntime as ort
 import orjson
@@ -48,6 +49,7 @@ from immich_ml.models.facial_recognition.recognition import FaceRecognizer
 from immich_ml.models.ocr.ctc import logits, probabilities
 from immich_ml.models.ocr.detection import TextDetector
 from immich_ml.models.ocr.recognition import TextRecognizer
+from immich_ml.models.qr.decoder import QrDecoder
 from immich_ml.schemas import (
     FaceDetectionOptions,
     FaceRecognitionOptions,
@@ -55,6 +57,7 @@ from immich_ml.schemas import (
     ModelSource,
     ModelTask,
     ModelType,
+    QrDetectionOptions,
     Shape,
     TextDetectionOptions,
     TextRecognitionOptions,
@@ -2107,6 +2110,41 @@ class TestOcr:
         text_recognizer = TextRecognizer("PP-OCRv5_mobile", cache_dir="test_cache")
 
         assert {shape.batch for shape in text_recognizer.shape_policy.dims} == {1, 6}
+
+
+def _qr_image(payload: str) -> Image.Image:
+    grid: Any = getattr(cv2, "QRCodeEncoder_create")().encode(payload)
+    modules = (np.asarray(grid) > 127).astype(np.uint8)
+    padded = np.pad(modules, 4, constant_values=0)
+    scale = max(1, 200 // padded.shape[0])
+    image = np.kron(padded, np.ones((scale, scale), np.uint8)) * 255
+    return Image.fromarray(image)
+
+
+class TestQr:
+    def test_decodes_a_qr_code(self) -> None:
+        result = QrDecoder("opencv")._predict(_qr_image("https://immich.app"), QrDetectionOptions())
+        assert result["payloads"] == ["https://immich.app"]
+        box = result["boxes"]
+        assert box.shape == (1, 4, 2)
+        assert (box >= 0).all() and (box <= 1).all()
+
+    def test_blank_image_has_no_codes(self) -> None:
+        result = QrDecoder("opencv")._predict(Image.new("RGB", (100, 100), "white"), QrDetectionOptions())
+        assert result["payloads"] == []
+        assert result["boxes"].shape == (0, 4, 2)
+
+    def test_accepts_the_opencv_model_name(self) -> None:
+        entry = InferenceEntry(QrDecoder, "opencv", QrDetectionOptions())
+        assert entry.model is QrDecoder
+
+    @pytest.mark.asyncio
+    async def test_predicts_a_qr_code(self, mocker: MockerFixture) -> None:
+        image = _qr_image("https://immich.app")
+        with ThreadPoolExecutor(2) as pool:
+            mocker.patch("immich_ml.main.thread_pool", pool)
+            response = await run_request(image, [InferenceEntry(QrDecoder, "opencv", QrDetectionOptions())])
+        assert response["qrcode"]["payloads"] == ["https://immich.app"]
 
 
 def stub_model() -> mock.MagicMock:

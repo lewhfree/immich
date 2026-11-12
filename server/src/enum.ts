@@ -866,6 +866,7 @@ export enum QueueName {
   Notification = 'notifications',
   BackupDatabase = 'backupDatabase',
   Ocr = 'ocr',
+  Qr = 'qr',
   Workflow = 'workflow',
   IntegrityCheck = 'integrityCheck',
   Editor = 'editor',
@@ -961,6 +962,10 @@ export enum JobName {
   // OCR
   OcrQueueAll = 'OcrQueueAll',
   Ocr = 'Ocr',
+
+  // QR
+  QrQueueAll = 'QrQueueAll',
+  Qr = 'Qr',
 
   // Workflow
   WorkflowAssetTrigger = 'WorkflowAssetTrigger',
@@ -1067,6 +1072,7 @@ export enum SyncRequestType {
   AssetEditsV1 = 'AssetEditsV1',
   AssetMetadataV1 = 'AssetMetadataV1',
   AssetOcrV1 = 'AssetOcrV1',
+  AssetQrV1 = 'AssetQrV1',
   AuthUsersV1 = 'AuthUsersV1',
   AuthUsersV2 = 'AuthUsersV2',
   MemoriesV1 = 'MemoriesV1',
@@ -1113,6 +1119,8 @@ export enum SyncEntityType {
   AssetMetadataDeleteV1 = 'AssetMetadataDeleteV1',
   AssetOcrV1 = 'AssetOcrV1',
   AssetOcrDeleteV1 = 'AssetOcrDeleteV1',
+  AssetQrV1 = 'AssetQrV1',
+  AssetQrDeleteV1 = 'AssetQrDeleteV1',
 
   PartnerV1 = 'PartnerV1',
   PartnerDeleteV1 = 'PartnerDeleteV1',

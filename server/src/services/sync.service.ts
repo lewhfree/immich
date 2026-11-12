@@ -81,6 +81,7 @@ export const SYNC_TYPES_ORDER = [
   SyncRequestType.AssetExifsV1,
   SyncRequestType.AlbumAssetExifsV1,
   SyncRequestType.AssetOcrV1,
+  SyncRequestType.AssetQrV1,
   SyncRequestType.PartnerAssetExifsV1,
   SyncRequestType.MemoriesV1,
   SyncRequestType.MemoriesV2,
@@ -222,6 +223,7 @@ export class SyncService extends BaseService {
       [SyncRequestType.AssetFacesV3]: () => this.syncAssetFacesV3(options, response, checkpointMap),
       [SyncRequestType.UserMetadataV1]: () => this.syncUserMetadataV1(options, response, checkpointMap),
       [SyncRequestType.AssetOcrV1]: () => this.syncAssetOcrV1(options, response, checkpointMap, auth),
+      [SyncRequestType.AssetQrV1]: () => this.syncAssetQrV1(options, response, checkpointMap, auth),
     } as const;
 
     for (const type of SYNC_TYPES_ORDER) {
@@ -258,6 +260,7 @@ export class SyncService extends BaseService {
     await this.syncRepository.user.cleanupAuditTable(pruneThreshold);
     await this.syncRepository.userMetadata.cleanupAuditTable(pruneThreshold);
     await this.syncRepository.assetOcr.cleanupAuditTable(pruneThreshold);
+    await this.syncRepository.assetQr.cleanupAuditTable(pruneThreshold);
   }
 
   private needsFullSync(checkpointMap: CheckpointMap) {
@@ -1022,6 +1025,33 @@ export class SyncService extends BaseService {
 
     const upsertType = SyncEntityType.AssetOcrV1;
     const upserts = this.syncRepository.assetOcr.getUpserts(
+      { ...options, ack: checkpointMap[upsertType] },
+      auth.user.id,
+    );
+
+    for await (const { updateId, ...data } of upserts) {
+      await send(response, { type: upsertType, ids: [updateId], data });
+    }
+  }
+
+  private async syncAssetQrV1(
+    options: SyncQueryOptions,
+    response: Writable,
+    checkpointMap: CheckpointMap,
+    auth: AuthDto,
+  ) {
+    const deleteType = SyncEntityType.AssetQrDeleteV1;
+    const deletes = this.syncRepository.assetQr.getDeletes(
+      { ...options, ack: checkpointMap[deleteType] },
+      auth.user.id,
+    );
+
+    for await (const row of deletes) {
+      await send(response, { type: deleteType, ids: [row.id], data: row });
+    }
+
+    const upsertType = SyncEntityType.AssetQrV1;
+    const upserts = this.syncRepository.assetQr.getUpserts(
       { ...options, ack: checkpointMap[upsertType] },
       auth.user.id,
     );

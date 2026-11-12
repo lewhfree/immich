@@ -91,6 +91,8 @@ _PADDLE_MODELS = {
     "PP-OCRv6_medium",
 }
 
+_OPENCV_MODEL = "opencv"
+
 SUPPORTED_PROVIDERS = [
     "nv_tensorrt_rtx",
     "CUDAExecutionProvider",
@@ -174,6 +176,9 @@ def get_model_source(model_name: str) -> ModelSource | None:
 
     if cleaned_name in _OPENCLIP_MODELS:
         return ModelSource.OPENCLIP
+
+    if cleaned_name == _OPENCV_MODEL:
+        return ModelSource.OPENCV
 
     if cleaned_name in _PADDLE_MODELS:
         return ModelSource.PADDLE

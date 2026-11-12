@@ -304,6 +304,23 @@ describe(AssetController.name, () => {
     });
   });
 
+  describe('GET /assets/:id/qr', () => {
+    it('should pass the asset id to the service', async () => {
+      const { status } = await request(ctx.getHttpServer()).get(`/assets/${factory.uuid()}/qr`);
+
+      expect(status).toBe(200);
+      expect(service.getQr).toHaveBeenCalledWith(undefined, expect.any(String));
+    });
+
+    it('should require a valid id', async () => {
+      const { status, body } = await request(ctx.getHttpServer()).get(`/assets/123/qr`);
+
+      expect(status).toBe(400);
+      expect(body).toEqual(factory.responses.validationError([{ path: ['id'], message: 'Invalid UUID' }]));
+      expect(service.getQr).not.toHaveBeenCalled();
+    });
+  });
+
   describe('PUT /assets/:id/edits', () => {
     it('should accept valid edits and pass to service correctly', async () => {
       const edits = [

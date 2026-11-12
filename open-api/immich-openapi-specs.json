@@ -5015,6 +5015,61 @@
         "x-immich-state": "Stable"
       }
     },
+    "/assets/{id}/qr": {
+      "get": {
+        "description": "Retrieve all QR code data associated with the specified asset.",
+        "operationId": "getAssetQr",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssetQrResponseDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Retrieve asset QR code data",
+        "tags": [
+          "Assets"
+        ],
+        "x-immich-history": [
+          {
+            "state": "Added",
+            "version": "v3.5.0"
+          }
+        ],
+        "x-immich-permission": "asset.read"
+      }
+    },
     "/assets/{id}/thumbnail": {
       "get": {
         "description": "Retrieve the thumbnail image for the specified asset. Viewing the fullsize thumbnail might redirect to downloadAsset, which requires a different permission.",
@@ -19480,6 +19535,9 @@
           "ocr": {
             "$ref": "#/components/schemas/AdminConfigJobSettingsDto"
           },
+          "qr": {
+            "$ref": "#/components/schemas/AdminConfigJobSettingsDto"
+          },
           "search": {
             "$ref": "#/components/schemas/AdminConfigJobSettingsDto"
           },
@@ -19509,6 +19567,7 @@
           "migration",
           "notifications",
           "ocr",
+          "qr",
           "search",
           "sidecar",
           "smartSearch",
@@ -19637,6 +19696,9 @@
           "ocr": {
             "$ref": "#/components/schemas/AdminConfigOcrDto"
           },
+          "qr": {
+            "$ref": "#/components/schemas/AdminConfigQrDto"
+          },
           "urls": {
             "description": "ML service URLs",
             "items": {
@@ -19653,6 +19715,7 @@
           "enabled",
           "facialRecognition",
           "ocr",
+          "qr",
           "urls"
         ],
         "type": "object"
@@ -19951,6 +20014,18 @@
         "type": "object"
       },
       "AdminConfigPasswordLoginDto": {
+        "properties": {
+          "enabled": {
+            "description": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "type": "object"
+      },
+      "AdminConfigQrDto": {
         "properties": {
           "enabled": {
             "description": "Enabled",
@@ -21631,6 +21706,78 @@
           "createdAt"
         ],
         "type": "string"
+      },
+      "AssetQrResponseDto": {
+        "properties": {
+          "assetId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          },
+          "payload": {
+            "description": "Decoded QR code payload",
+            "type": "string"
+          },
+          "x1": {
+            "description": "Normalized x coordinate of box corner 1 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x2": {
+            "description": "Normalized x coordinate of box corner 2 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x3": {
+            "description": "Normalized x coordinate of box corner 3 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x4": {
+            "description": "Normalized x coordinate of box corner 4 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y1": {
+            "description": "Normalized y coordinate of box corner 1 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y2": {
+            "description": "Normalized y coordinate of box corner 2 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y3": {
+            "description": "Normalized y coordinate of box corner 3 (0-1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y4": {
+            "description": "Normalized y coordinate of box corner 4 (0-1)",
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "assetId",
+          "id",
+          "payload",
+          "x1",
+          "x2",
+          "x3",
+          "x4",
+          "y1",
+          "y2",
+          "y3",
+          "y4"
+        ],
+        "type": "object"
       },
       "AssetRejectReason": {
         "description": "Rejection reason if rejected",
@@ -23351,6 +23498,8 @@
           "VersionCheck",
           "OcrQueueAll",
           "Ocr",
+          "QrQueueAll",
+          "Qr",
           "WorkflowAssetTrigger",
           "IntegrityUntrackedFilesQueueAll",
           "IntegrityUntrackedFiles",
@@ -26966,6 +27115,7 @@
           "notifications",
           "backupDatabase",
           "ocr",
+          "qr",
           "workflow",
           "integrityCheck",
           "editor"
@@ -27136,6 +27286,9 @@
           "ocr": {
             "$ref": "#/components/schemas/QueueResponseLegacyDto"
           },
+          "qr": {
+            "$ref": "#/components/schemas/QueueResponseLegacyDto"
+          },
           "search": {
             "$ref": "#/components/schemas/QueueResponseLegacyDto"
           },
@@ -27171,6 +27324,7 @@
           "migration",
           "notifications",
           "ocr",
+          "qr",
           "search",
           "sidecar",
           "smartSearch",
@@ -31940,6 +32094,110 @@
         ],
         "type": "object"
       },
+      "SyncAssetQrDeleteV1": {
+        "properties": {
+          "assetId": {
+            "description": "Original asset ID of the deleted QR entry",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "Timestamp when the QR entry was deleted",
+            "example": "2024-01-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          },
+          "id": {
+            "description": "Audit row ID of the deleted QR entry",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId",
+          "deletedAt",
+          "id"
+        ],
+        "type": "object"
+      },
+      "SyncAssetQrV1": {
+        "properties": {
+          "assetId": {
+            "description": "Asset ID",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          },
+          "id": {
+            "description": "QR entry ID",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          },
+          "isVisible": {
+            "description": "Whether the QR entry is visible",
+            "type": "boolean"
+          },
+          "payload": {
+            "description": "Recognized QR code content",
+            "type": "string"
+          },
+          "x1": {
+            "description": "Top-left X coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x2": {
+            "description": "Top-right X coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x3": {
+            "description": "Bottom-right X coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "x4": {
+            "description": "Bottom-left X coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y1": {
+            "description": "Top-left Y coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y2": {
+            "description": "Top-right Y coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y3": {
+            "description": "Bottom-right Y coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          },
+          "y4": {
+            "description": "Bottom-left Y coordinate (normalized 0–1)",
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "assetId",
+          "id",
+          "isVisible",
+          "payload",
+          "x1",
+          "x2",
+          "x3",
+          "x4",
+          "y1",
+          "y2",
+          "y3",
+          "y4"
+        ],
+        "type": "object"
+      },
       "SyncAssetV1": {
         "properties": {
           "checksum": {
@@ -32496,6 +32754,8 @@
           "AssetMetadataDeleteV1",
           "AssetOcrV1",
           "AssetOcrDeleteV1",
+          "AssetQrV1",
+          "AssetQrDeleteV1",
           "PartnerV1",
           "PartnerDeleteV1",
           "PartnerAssetV1",
@@ -32974,6 +33234,7 @@
           "AssetEditsV1",
           "AssetMetadataV1",
           "AssetOcrV1",
+          "AssetQrV1",
           "AuthUsersV1",
           "AuthUsersV2",
           "MemoriesV1",

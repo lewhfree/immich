@@ -978,6 +978,17 @@ where
   and "asset"."deletedAt" is null
   and "asset"."visibility" != $1
 
+-- AssetJobRepository.streamForQrJob
+select
+  "asset"."id"
+from
+  "asset"
+  inner join "asset_job_status" on "asset_job_status"."assetId" = "asset"."id"
+where
+  "asset_job_status"."qrAt" is null
+  and "asset"."deletedAt" is null
+  and "asset"."visibility" != $1
+
 -- AssetJobRepository.streamForMigrationJob
 select
   "id"

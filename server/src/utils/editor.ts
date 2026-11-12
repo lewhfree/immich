@@ -1,5 +1,6 @@
 import { AssetFace } from 'src/database.js';
 import { AssetOcrResponseDto } from 'src/dtos/ocr.dto.js';
+import { AssetQrResponseDto } from 'src/dtos/qr.dto.js';
 import type { ImageDimensions } from 'src/types.js';
 
 type BoundingBox = {
@@ -103,5 +104,42 @@ export const checkOcrVisibility = (
   return {
     visible: status.filter((s) => s.isVisible).map((s) => s.ocr),
     hidden: status.filter((s) => !s.isVisible).map((s) => s.ocr),
+  };
+};
+
+export const checkQrVisibility = (
+  qrs: (AssetQrResponseDto & { isVisible: boolean })[],
+  originalAssetDimensions: ImageDimensions,
+  crop?: BoundingBox,
+): { visible: AssetQrResponseDto[]; hidden: AssetQrResponseDto[] } => {
+  if (!crop) {
+    return {
+      visible: qrs.filter((qr) => !qr.isVisible),
+      hidden: [],
+    };
+  }
+
+  const status = qrs.map((qr) => {
+    const qrBox = scale(
+      {
+        x1: Math.min(qr.x1, qr.x2, qr.x3, qr.x4),
+        y1: Math.min(qr.y1, qr.y2, qr.y3, qr.y4),
+        x2: Math.max(qr.x1, qr.x2, qr.x3, qr.x4),
+        y2: Math.max(qr.y1, qr.y2, qr.y3, qr.y4),
+      },
+      originalAssetDimensions,
+    );
+
+    const overlapPercentage = boundingBoxOverlap(qrBox, crop);
+
+    return {
+      qr,
+      isVisible: overlapPercentage >= 0.5,
+    };
+  });
+
+  return {
+    visible: status.filter((s) => s.isVisible).map((s) => s.qr),
+    hidden: status.filter((s) => !s.isVisible).map((s) => s.qr),
   };
 };

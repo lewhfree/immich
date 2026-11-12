@@ -466,6 +466,21 @@ export class AssetJobRepository {
       .stream();
   }
 
+  @GenerateSql({ params: [], stream: true })
+  streamForQrJob(force?: boolean) {
+    return this.db
+      .selectFrom('asset')
+      .select(['asset.id'])
+      .$if(!force, (qb) =>
+        qb
+          .innerJoin('asset_job_status', 'asset_job_status.assetId', 'asset.id')
+          .where('asset_job_status.qrAt', 'is', null),
+      )
+      .where('asset.deletedAt', 'is', null)
+      .where('asset.visibility', '!=', AssetVisibility.Hidden)
+      .stream();
+  }
+
   @GenerateSql({ params: [DummyValue.DATE], stream: true })
   streamForMigrationJob() {
     return this.db.selectFrom('asset').select(['id']).where('asset.deletedAt', 'is', null).stream();

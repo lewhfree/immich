@@ -39,6 +39,7 @@ import { MoveRepository } from 'src/repositories/move.repository.js';
 import { NotificationRepository } from 'src/repositories/notification.repository.js';
 import { OAuthRepository } from 'src/repositories/oauth.repository.js';
 import { OcrRepository } from 'src/repositories/ocr.repository.js';
+import { QrRepository } from 'src/repositories/qr.repository.js';
 import { PartnerRepository } from 'src/repositories/partner.repository.js';
 import { PasskeyRepository } from 'src/repositories/passkey.repository.js';
 import { PersonUserRepository } from 'src/repositories/person-user.repository.js';
@@ -178,6 +179,7 @@ export class BaseService {
     protected notificationRepository: NotificationRepository,
     protected oauthRepository: OAuthRepository,
     protected ocrRepository: OcrRepository,
+    protected qrRepository: QrRepository,
     protected partnerRepository: PartnerRepository,
     protected passkeyRepository: PasskeyRepository,
     protected personRepository: PersonRepository,
@@ -253,6 +255,7 @@ export class BaseService {
       ctx.notificationRepository,
       ctx.oauthRepository,
       ctx.ocrRepository,
+      ctx.qrRepository,
       ctx.partnerRepository,
       ctx.passkeyRepository,
       ctx.personRepository,

@@ -175,6 +175,7 @@ export type AdminConfigJobDto = {
     migration: AdminConfigJobSettingsDto;
     notifications: AdminConfigJobSettingsDto;
     ocr: AdminConfigJobSettingsDto;
+    qr: AdminConfigJobSettingsDto;
     search: AdminConfigJobSettingsDto;
     sidecar: AdminConfigJobSettingsDto;
     smartSearch: AdminConfigJobSettingsDto;
@@ -243,6 +244,10 @@ export type AdminConfigOcrDto = {
     /** Name of the model to use */
     modelName: string;
 };
+export type AdminConfigQrDto = {
+    /** Enabled */
+    enabled: boolean;
+};
 export type AdminConfigMachineLearningDto = {
     availabilityChecks: AdminConfigMachineLearningAvailabilityChecksDto;
     clip: AdminConfigClipDto;
@@ -251,6 +256,7 @@ export type AdminConfigMachineLearningDto = {
     enabled: boolean;
     facialRecognition: AdminConfigFacialRecognitionDto;
     ocr: AdminConfigOcrDto;
+    qr: AdminConfigQrDto;
     /** ML service URLs */
     urls: string[];
 };
@@ -1458,6 +1464,28 @@ export type AssetOcrResponseDto = {
     /** Normalized y coordinate of box corner 4 (0-1) */
     y4: number;
 };
+export type AssetQrResponseDto = {
+    assetId: string;
+    id: string;
+    /** Decoded QR code payload */
+    payload: string;
+    /** Normalized x coordinate of box corner 1 (0-1) */
+    x1: number;
+    /** Normalized x coordinate of box corner 2 (0-1) */
+    x2: number;
+    /** Normalized x coordinate of box corner 3 (0-1) */
+    x3: number;
+    /** Normalized x coordinate of box corner 4 (0-1) */
+    x4: number;
+    /** Normalized y coordinate of box corner 1 (0-1) */
+    y1: number;
+    /** Normalized y coordinate of box corner 2 (0-1) */
+    y2: number;
+    /** Normalized y coordinate of box corner 3 (0-1) */
+    y3: number;
+    /** Normalized y coordinate of box corner 4 (0-1) */
+    y4: number;
+};
 export type SignUpDto = {
     /** User email */
     email: string;
@@ -1809,6 +1837,7 @@ export type QueuesResponseLegacyDto = {
     migration: QueueResponseLegacyDto;
     notifications: QueueResponseLegacyDto;
     ocr: QueueResponseLegacyDto;
+    qr: QueueResponseLegacyDto;
     search: QueueResponseLegacyDto;
     sidecar: QueueResponseLegacyDto;
     smartSearch: QueueResponseLegacyDto;
@@ -3653,6 +3682,40 @@ export type SyncAssetOcrV1 = {
     /** Bottom-left Y coordinate (normalized 0–1) */
     y4: number;
 };
+export type SyncAssetQrDeleteV1 = {
+    /** Original asset ID of the deleted QR entry */
+    assetId: string;
+    /** Timestamp when the QR entry was deleted */
+    deletedAt: string;
+    /** Audit row ID of the deleted QR entry */
+    id: string;
+};
+export type SyncAssetQrV1 = {
+    /** Asset ID */
+    assetId: string;
+    /** QR entry ID */
+    id: string;
+    /** Whether the QR entry is visible */
+    isVisible: boolean;
+    /** Recognized QR code content */
+    payload: string;
+    /** Top-left X coordinate (normalized 0–1) */
+    x1: number;
+    /** Top-right X coordinate (normalized 0–1) */
+    x2: number;
+    /** Bottom-right X coordinate (normalized 0–1) */
+    x3: number;
+    /** Bottom-left X coordinate (normalized 0–1) */
+    x4: number;
+    /** Top-left Y coordinate (normalized 0–1) */
+    y1: number;
+    /** Top-right Y coordinate (normalized 0–1) */
+    y2: number;
+    /** Bottom-right Y coordinate (normalized 0–1) */
+    y3: number;
+    /** Bottom-left Y coordinate (normalized 0–1) */
+    y4: number;
+};
 export type SyncAssetV1 = {
     /** Checksum */
     checksum: string;
@@ -5099,6 +5162,19 @@ export function downloadAsset({ edited, id, key, slug }: {
         key,
         slug
     }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Retrieve asset QR code data
+ */
+export function getAssetQr({ id }: {
+    id: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AssetQrResponseDto[];
+    }>(`/assets/${encodeURIComponent(id)}/qr`, {
         ...opts
     }));
 }
@@ -8577,6 +8653,7 @@ export enum QueueName {
     Notifications = "notifications",
     BackupDatabase = "backupDatabase",
     Ocr = "ocr",
+    Qr = "qr",
     Workflow = "workflow",
     IntegrityCheck = "integrityCheck",
     Editor = "editor"
@@ -8681,6 +8758,8 @@ export enum JobName {
     VersionCheck = "VersionCheck",
     OcrQueueAll = "OcrQueueAll",
     Ocr = "Ocr",
+    QrQueueAll = "QrQueueAll",
+    Qr = "Qr",
     WorkflowAssetTrigger = "WorkflowAssetTrigger",
     IntegrityUntrackedFilesQueueAll = "IntegrityUntrackedFilesQueueAll",
     IntegrityUntrackedFiles = "IntegrityUntrackedFiles",
@@ -8731,6 +8810,8 @@ export enum SyncEntityType {
     AssetMetadataDeleteV1 = "AssetMetadataDeleteV1",
     AssetOcrV1 = "AssetOcrV1",
     AssetOcrDeleteV1 = "AssetOcrDeleteV1",
+    AssetQrV1 = "AssetQrV1",
+    AssetQrDeleteV1 = "AssetQrDeleteV1",
     PartnerV1 = "PartnerV1",
     PartnerDeleteV1 = "PartnerDeleteV1",
     PartnerAssetV1 = "PartnerAssetV1",
@@ -8795,6 +8876,7 @@ export enum SyncRequestType {
     AssetEditsV1 = "AssetEditsV1",
     AssetMetadataV1 = "AssetMetadataV1",
     AssetOcrV1 = "AssetOcrV1",
+    AssetQrV1 = "AssetQrV1",
     AuthUsersV1 = "AuthUsersV1",
     AuthUsersV2 = "AuthUsersV2",
     MemoriesV1 = "MemoriesV1",
